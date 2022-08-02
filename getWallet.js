@@ -4,22 +4,35 @@ $(document).ready(function () {
   window.ethereum.on("accountsChanged", function (accounts) {
     getAddress();
   });
-
 });
 async function getAddress() {
   if (window.ethereum) {
     try {
       const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
+        method: "eth_accounts",
       });
-      console.log(accounts[0]);
-      postData(accounts[0]).then({});
-      return accounts[0];
+      if (accounts.length > 0) {
+        window.ethereum
+          .request({ method: "eth_chainId" })
+          .then((chainId) => {
+            console.log(`Chain ID: ${parseInt(chainId, 16)}`);
+          })
+          .catch((error) => {
+            console.error(
+              `Error fetching chainId: ${error.code}: ${error.message}`
+            );
+          });
+        console.log(accounts[0]);
+        postData(accounts[0]).then({});
+        return accounts[0];
+      } else {
+        console.log("Account not connected but have Crypto Wallet");
+      }
     } catch (error) {
       if (error.code === 4001) {
         // User rejected request
       }
-      console.log(error)
+      console.log(error);
       setError(error);
     }
   }
