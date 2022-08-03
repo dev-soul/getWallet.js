@@ -1,10 +1,21 @@
 $(document).ready(function () {
   getAddress();
-
+  getConfig().then(res =>{
+    console.log(res)
+  })
   window.ethereum.on("accountsChanged", function (accounts) {
     getAddress();
   });
 });
+
+async function getConfig() {
+
+  const res = await fetch('/cred.json');
+  const config = res.json();
+  return config
+  
+  }
+
 async function getAddress() {
   if (window.ethereum) {
     try {
